@@ -1,0 +1,22 @@
+一：如何使用‘LSSDKTemplate’制作framework？（Ps：以开源库‘AFNetworking’举例。）
+
+1、修改SDK模板Project文件夹’LSSDKTemplate’为开源库的名字（LSSDKTemplate修改为AFNetworking）。
+2、修改SDK模板Project’LSSDKTemplate’为开源库的名字（Xcode打开Project’LSSDKTemplate’，选中‘LSSDKTemplate’ Project文件单击回车键即可修改工程名）。
+3、修改/Supporting Files/LSSDKTemplate-Info.plist文件名为对应开源库的名字（LSSDKTemplate-Info.plist修改为AFNetworking-Info.plist）。
+4、Build Aggregate：如果Build Successed -> 删掉’LSTestSDK.h’和’LSTestSDK.m’两个文件。如果Build Failed -> 检查步骤1、2、3排查错误。
+5、Copy开源库源代码源文件至/SDK/Classes目录下(或者在该目录下新建相关文件开发自己的framework)，并添加到Project中（Add Files to…）。
+6、将开源库头文件移动到Public组别下（依次选中对应的TARGETS -> Build Phases -> Headers -> Project下的头文件鼠标右键 -> Move to Public Group。e.g. TARGETS -> AFNetworking -> Build Phases -> Headers -> 选中Project Group下所有头文件 -> Move to Public Group）。
+7、Build Aggregate：如果Build Successed -> 恭喜，framework制作成功。如果Build Failed -> 检查步骤5、6排查错误。
+
+Ps：在制作framework时，由于Aggregate中的脚本中对文件目录路径未做空格‘ ’兼容，不要将’LSSDKTemplate’整个Project放在带有空格的目录路径中，否则在Build Aggregate时会报‘Shell Script Invocation Error’ -> ‘Command/bin/sh failed with exit code 64’错误。
+
+二：如果当前制作的framework依赖其他第三方库怎么办？
+1、将需要依赖的第三方库Copy至当前Project下的/SDK/frameworks目录中，并在当前的TARGET中的Build Settings中设置Framwork Search Paths为对应的目录即可。
+
+三：最终编译成功的framework在什么地方？
+1、Build Aggregate 成功后，生成的对应的framework文件存放在项目根目录下的’buildProducts’文件目录中。
+2、buildProducts文件目录中包含一个’xxx.framework’文件和’device’以及’simulator’文件目录。
+3、在buildProducts文件目录下的‘xxx.framework’文件是可以适用于iOS真机设备指令集（armv7、arm64）和iOS模拟器指令集（i386、x86_64）的通用framework。
+4、在/buildProducts/device文件目录下的’xxx.framework’文件是仅仅适用于iOS真机设备指令集（armv7、arm64）的framework。Xcode为了减少包的大小，省去了armv7s指令集专用包，但该framework同样兼容armv7s指令集的iOS真机设备。
+5、在/buildProducts/simulator文件目录下的’xxx.framework’文件是仅仅适用于iOS模拟器指令集（i386、x86_64）的framework。
+6、在/buildProducts/device文件目录下的’xxx.framework’文件是通过Xcode archive命名构建的发布包，支持Apple的Bitcode。
